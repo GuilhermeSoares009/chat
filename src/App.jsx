@@ -8,21 +8,35 @@ import { Register } from "./pages/Register";
 import {
   BrowserRouter,
   Routes,
-  Route
+  Route,
+  Navigate
 } from "react-router-dom"
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 
 function App() {
   const {currentUser} = useContext(AuthContext);
-  console.log(AuthContext);
+  const isUserAuthenticated = currentUser !== undefined && currentUser !== null;
+
+ 
+  const ProtectedRoute = ({children}) => {
+    console.log(isUserAuthenticated);
+    if (!isUserAuthenticated) {
+      return <Navigate  to="/login" />
+    }
+    return children;
+  }
 
   return (
 
     <BrowserRouter>
       <Routes>
         <Route path="/">
-          <Route index element={<Home />} />
+          <Route index element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          } />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
