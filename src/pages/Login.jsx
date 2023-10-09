@@ -14,10 +14,8 @@ export const Login = () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      console.log('teste login')
       navigate("/")
     } catch (err) {
-      console.log({ 'err2': err });
       setErr(true)
     }
   }

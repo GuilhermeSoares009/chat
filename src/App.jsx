@@ -20,7 +20,6 @@ function App() {
 
  
   const ProtectedRoute = ({children}) => {
-    console.log(isUserAuthenticated);
     if (!isUserAuthenticated) {
       return <Navigate  to="/login" />
     }

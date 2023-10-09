@@ -26,7 +26,6 @@ export const Register = () => {
 
       uploadTask.on(
         (error) => {
-          console.log({'err1':error});
           setErr(true)
         },
         () => {
@@ -48,7 +47,6 @@ export const Register = () => {
         }
       );
     } catch (err) {
-      console.log({'err2':err});
       setErr(true)
     }
   }
