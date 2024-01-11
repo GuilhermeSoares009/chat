@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
-import { collection, getDocs, query, where } from "firebase/firestore";
+import React, { useContext, useState } from 'react'
+import { collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import {db} from "../firebase"
+import {AuthContext} from "../context/AuthContext";
 
 export default function Search() {
 
   const [userName, setUserName] = useState("");
   const [user, setUser] = useState(null);
   const [err, setErr] = useState(false);
+
+  const {currentUser} = useContext(AuthContext)
 
   const handleSearch = async() => {
     const q = query(
@@ -31,6 +34,47 @@ export default function Search() {
     e.code === "Enter" && handleSearch()
   };
 
+  const handleSelect = async () => {
+    const combinedId = 
+      (currentUser.uid > user.uid)
+      ? currentUser.uid + user.uid
+      : user.uid + currentUser.uid;
+
+      try {
+        const res =  await getDoc(doc(db, "chats", combinedId));
+        console.log(!res.exists());
+        if(!res.exists()) {
+          // cria uma coleção de chats
+          await setDoc(doc(db, "chats", combinedId), { messages: [] }).then(() => {
+            console.log("Documento definido com sucesso:");
+          }).catch((error) => {
+            console.error("Erro ao definir o documento:", error);
+          });
+  
+          // cria chats por usuário
+          await updateDoc(doc(db, "userChats", currentUser.uid), {
+            [combinedId+".userInfo"]: {
+              uid: user.uid,
+              displayName: user.displayName,
+              photoURL: user.photoURL
+            },
+            [combinedId+".date"]: serverTimestamp()
+          });
+
+          await updateDoc(doc(db, "userChats", user.uid), {
+            [combinedId+".userInfo"]: {
+              uid: currentUser.uid,
+              displayName: currentUser.displayName,
+              photoURL: currentUser.photoURL
+            },
+            [combinedId+".date"]: serverTimestamp()
+          });
+  
+        }
+      } catch (err) { }
+
+  } 
+
   return (
     <div className='search'>
         <div className='searchForm'> 
@@ -40,7 +84,7 @@ export default function Search() {
             onChange={ (e) => setUserName(e.target.value) }/>   
         </div>
         {err && <span>Usuário não encontrado</span>}
-        {user && <div className="userChat">
+        {user && <div className="userChat" onClick={handleSelect}>
             <img src={user.photoURL} alt="" />
             <div className="userChatInfo">
                 <span>{user.displayName}</span>
