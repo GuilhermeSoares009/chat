@@ -1,38 +1,39 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react';
+import { doc, onSnapshot } from "firebase/firestore";
+import { AuthContext } from "../context/AuthContext"
+import { db } from "../firebase";
 
 export default function Chats() {
+
+  const [chats, setChats] = useState([]);
+
+  const { currentUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    const getChats = () => {
+      const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
+        setChats(doc.data());
+      });
+
+      return () => {
+        unsub();
+      };
+    };
+
+    currentUser.uid && getChats()
+  }, [currentUser.uid]);
+
   return (
     <div className='chats'>
-      <div className="userChat">
-        <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-        <div className="userChatInfo">
-          <span>Jane</span>
+      {Object.entries(chats)?.map((chat) => (
+        <div className="userChat" key={chat[0]}>
+          <img src={chat[1].userInfo.photoURL} alt="" />
+          <div className="userChatInfo">
+            <span>{chat[1].userInfo.displayName}</span>
+            <span>{chat[1].userInfo.lastMessage?.text}</span>
+          </div>
         </div>
-      </div>
-      <div className="userChat">
-        <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-        <div className="userChatInfo">
-          <span>Jane</span>
-        </div>
-      </div>
-      <div className="userChat">
-        <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-        <div className="userChatInfo">
-          <span>Jane</span>
-        </div>
-      </div>
-      <div className="userChat">
-        <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-        <div className="userChatInfo">
-          <span>Jane</span>
-        </div>
-      </div>
-      <div className="userChat">
-        <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-        <div className="userChatInfo">
-          <span>Jane</span>
-        </div>
-      </div>
+      ))}
     </div>
   )
-}
+};
