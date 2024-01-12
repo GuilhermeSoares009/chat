@@ -1,5 +1,16 @@
 import React, { useContext, useState } from 'react'
-import { collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { 
+  collection, 
+  query, 
+  where,
+  doc, 
+  getDoc, 
+  getDocs,
+  setDoc, 
+  serverTimestamp, 
+  updateDoc, 
+ 
+} from "firebase/firestore";
 import {db} from "../firebase"
 import {AuthContext} from "../context/AuthContext";
 
@@ -41,15 +52,11 @@ export default function Search() {
       : user.uid + currentUser.uid;
 
       try {
-        const res =  await getDoc(doc(db, "chats", combinedId));
-        console.log(!res.exists());
+        const res = await getDoc(doc(db, "chats", combinedId));
+
         if(!res.exists()) {
           // cria uma coleção de chats
-          await setDoc(doc(db, "chats", combinedId), { messages: [] }).then(() => {
-            console.log("Documento definido com sucesso:");
-          }).catch((error) => {
-            console.error("Erro ao definir o documento:", error);
-          });
+          await setDoc(doc(db, "chats", combinedId), { messages: [] });
   
           // cria chats por usuário
           await updateDoc(doc(db, "userChats", currentUser.uid), {
@@ -72,6 +79,9 @@ export default function Search() {
   
         }
       } catch (err) { }
+
+      setUser(null);
+      setUserName("");
 
   } 
 
