@@ -32,12 +32,9 @@ const ChatContextProvider = ({ children }) => {
     }
 
     const [state, dispatch] = useReducer(chatReducer, INITIAL_STATE);
-    console.log("ChatContextProvider state:", state);
-    console.log("ChatContextProvider dispatch:", dispatch);
-
 
     return (
-        <ChatContext.Provider value={{ state,dispatch }}>
+        <ChatContext.Provider value={{ data: state,dispatch }}>
             {children}
         </ChatContext.Provider>
     )

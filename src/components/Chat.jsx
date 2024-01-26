@@ -9,11 +9,12 @@ import { ChatContext } from '../context/ChatContext'
 
 
 export default function Chat() {
-  const { user } = useContext(ChatContext);
+  const { data } = useContext(ChatContext);
+  console.log(data);
   return (
     <div className="chat">
       <div className="chatInfo">
-        <span>{user?.displayName}</span>
+        <span>{data.user?.displayName}</span>
         <div className="chatIcons">
           <img src={Cam} alt="" />
           <img src={Add} alt="" />
