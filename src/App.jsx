@@ -19,12 +19,13 @@ function App() {
   const isUserAuthenticated = currentUser !== undefined && currentUser !== null;
 
  
-  const ProtectedRoute = ({children}) => {
-    if (!isUserAuthenticated) {
-      return <Navigate  to="/login" />
+  const ProtectedRoute = ({ children }) => {
+    if (!currentUser) {
+      return <Navigate to="/login" />;
     }
-    return children;
-  }
+
+    return children
+  };
 
   return (
 

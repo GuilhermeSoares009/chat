@@ -91,15 +91,18 @@ export default function Search() {
             <input type="text" 
             placeholder='Encontre um usuário' 
             onKeyDown={handleKey}  
-            onChange={ (e) => setUserName(e.target.value) }/>   
+            onChange={ (e) => setUserName(e.target.value) }
+            value={userName}/>   
         </div>
         {err && <span>Usuário não encontrado</span>}
-        {user && <div className="userChat" onClick={handleSelect}>
-            <img src={user.photoURL} alt="" />
-            <div className="userChatInfo">
-                <span>{user.displayName}</span>
-            </div>
-        </div> }
+        {user && (
+            <div className="userChat" onClick={handleSelect}>
+                <img src={user.photoURL} alt="" />
+                <div className="userChatInfo">
+                    <span>{user.displayName}</span>
+                </div>
+            </div> 
+        )}
     </div>
   )
 }
