@@ -3,10 +3,10 @@ import Img from "../img/img.png"
 import Attach from "../img/attach.png"
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
-import { Timestamp, arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { v4 as uuid } from 'uuid';
-import { ref, uploadBytesResumable } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 
 export default function Input() {
   const [text, setText] = useState("");
@@ -21,12 +21,16 @@ export default function Input() {
 
       const uploadTask = uploadBytesResumable(storageRef, img);
 
+
+
       uploadTask.on(
         (error) => {
-          //TODO:Handle Error
+          console.error("Erro durante o upload:", error);
         },
         () => {
+          console.log("Upload concluído. Obtendo URL de download...");
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            console.log("URL de download obtido:", downloadURL)
             await updateDoc(doc(db, "chats", data.chatId), {
               messages: arrayUnion({
                 id: uuid(),
@@ -49,7 +53,24 @@ export default function Input() {
         }),
       });
     }
-  }
+
+    await updateDoc(doc(db, "userChats", currentUser.uid), {
+      [data.chatId + ".lastMessage"]: {
+        text,
+      },
+      [data.chatId + ".date"]: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db, "userChats", data.user.uid), {
+      [data.chatId + ".lastMessage"]: {
+        text,
+      },
+      [data.chatId + ".date"]: serverTimestamp(),
+    });
+
+    setText("");
+    setImg(null);
+  };
 
   return (
     <div className="input">
