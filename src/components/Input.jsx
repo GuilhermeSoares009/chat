@@ -74,7 +74,7 @@ export default function Input() {
 
   return (
     <div className="input">
-      <input type="text" placeholder="Escreva aqui...." onChange={e => setText(e.target.value)} />
+      <input type="text" placeholder="Escreva aqui...." onChange={e => setText(e.target.value)} value={text} />
       <div className="send">
         <img src={Attach} />
         <input type="file" style={{ display: "none" }} id="file" onChange={e => setImg(e.target.files[0])} />
