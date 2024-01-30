@@ -22,8 +22,6 @@ export const Register = () => {
 
       const storageRef = ref(storage, displayName);
 
-    /*   const uploadTask = uploadBytesResumable(storageRef, file); */
-
       await uploadBytesResumable(storageRef, file).then(() => {
           getDownloadURL(storageRef).then(async(downloadURL) => {
             await updateProfile(res.user, {
